@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Client</title>
+  </head>
+  <body>
+    <label for="currenciesInput">Currencies (comma-separated): </label>
+    <input type="text" id="currenciesInput" placeholder="USD,EUR" /><br />
+
+    <label for="daysInput">Number of Days: </label>
+    <input type="number" id="daysInput" placeholder="2" /><br />
+
+    <button onclick="sendMessage()">Get Exchange Rates</button>
+
+    <div id="resultContainer"></div>
+
+    <script>
+      const socket = new WebSocket("ws://localhost:8765");
+
+      socket.addEventListener("open", (event) => {
+        console.log("Connected to WebSocket server");
+      });
+
+      socket.addEventListener("message", (event) => {
+        console.log("Received message from server:", event.data);
+        displayResult(event.data);
+      });
+
+      function sendMessage() {
+        const currenciesInput = document.getElementById("currenciesInput");
+        const daysInput = document.getElementById("daysInput");
+
+        const currencies = currenciesInput.value;
+        const days = daysInput.value;
+
+        const command = `exchange ${currencies} ${days}`;
+        socket.send(command);
+      }
+
+      function displayResult(result) {
+        const resultContainer = document.getElementById("resultContainer");
+
+        // Clear previous results
+        resultContainer.innerHTML = "";
+
+        // Check if result is a string
+        if (
+          typeof result === "string" &&
+          !result.startsWith("[") &&
+          !result.endsWith("]")
+        ) {
+          // Display the string directly
+          resultContainer.innerHTML = result;
+        } else {
+          // Display results for non-string input
+          JSON.parse(result).forEach((resultString) => {
+            const result = JSON.parse(resultString);
+
+            const date = Object.keys(result)[0];
+            const rates = result[date];
+
+            const formattedResult = document.createElement("div");
+            formattedResult.innerHTML = `<p>----------Date: ${date}----------</p>`;
+
+            for (const currency in rates) {
+              const rateInfo = rates[currency];
+              formattedResult.innerHTML += `<p>${currency}: Sale: ${rateInfo.sale}, Purchase: ${rateInfo.purchase}</p>`;
+            }
+
+            resultContainer.appendChild(formattedResult);
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

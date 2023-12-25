@@ -1,0 +1,6 @@
+2023-12-25 15:57:36,296 - INFO - server listening on 127.0.0.1:8765
+2023-12-25 15:57:36,296 - INFO - server listening on [::1]:8765
+2023-12-25 15:57:43,742 - INFO - connection open
+2023-12-25 15:58:07,992 - INFO - Received command: exchange USD,EUR 2
+2023-12-25 15:58:45,920 - INFO - Received command: exchange USD,EUR 2
+2023-12-25 15:59:08,979 - INFO - Received command: exchange USD,EUR 11
